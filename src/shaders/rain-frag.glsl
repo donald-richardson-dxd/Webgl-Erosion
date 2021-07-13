@@ -64,62 +64,9 @@ struct BrushTmp{
 void main() {
 
       vec2 curuv = 0.5f*fs_Pos+0.5f;
-      vec3 sand = vec3(214.f/255.f,164.f/255.f,96.f/255.f);
-      vec3 watercol = vec3(0.1,0.3,0.8);
-
-
-      float addterrain = 0.0;
-      float addwater = 0.0;
-      float amount = 0.0006 * u_BrushStrength;
-      if(u_BrushType != 0){
-            vec3 ro = u_MouseWorldPos.xyz;
-            vec3 rd = u_MouseWorldDir;
-            vec2 pointOnPlane = u_BrushPos;
-            float pdis2fragment = distance(pointOnPlane, curuv);
-            if (pdis2fragment < 0.01 * u_BrushSize){
-                  float dens = (0.01 * u_BrushSize - pdis2fragment) / (0.01 * u_BrushSize);
-
-                  if(u_BrushType == 1 && u_BrushPressed == 1){
-                        addterrain =  amount * 1.0 * 280.0;
-                        addterrain = u_BrushOperation == 0 ? addterrain : -addterrain;
-                  }else if(u_BrushType == 2 && u_BrushPressed == 1){
-                        addwater =  amount * dens * 280.0;
-                        float aw = noise(vec3(curuv * 100.0, u_Time));
-                        addwater *= aw;
-                        addwater = u_BrushOperation == 0 ? addwater : -addwater;
-                  }
-
-            }
-
-      }
-
-
-
-
       vec4 cur = texture(readTerrain,curuv);
-      float rain = raindeg;
 
+      float rain = 0.001f;
 
-
-      float epsilon = 0.000001f;
-      float nrain = noise(vec3(curuv * 100.0, u_Time));
-      //nrain = 1.0f;
-      rain = nrain/150.0;
-
-//      if(mod(u_Time, 10.0) <= 1.0){
-//            rain = 0.0f;
-//            addwater = 0.0f;
-//      }
-
-      rain = 0.0f;
-      epsilon = 0.0f;
-//      if(curuv.x<maxx && curuv.x>minx && curuv.y<maxy&&curuv.y>miny){
-//            rain += 0.001;
-//      }
-//      else{
-//            rain = raindeg;
-//      }
-
-
-      writeTerrain = vec4(min(max(cur.x + addterrain, -0.10),2000.30),max(cur.y+rain * raindeg + addwater, 0.0f),cur.z,cur.w);
+      writeTerrain = vec4(min(max(min(200.f, cur.x), -0.10),2000.30),max(cur.y+rain, 0.0f),cur.z,cur.w);
 }
